@@ -14,11 +14,7 @@ class HomeView extends GetView<HomeController> {
       appBar: AppBar(
         title: const Text("Home"),
         actions: [
-          IconButton(
-              onPressed: () {
-                controller.adManager.showAppOpenAd();
-              },
-              icon: const Icon(Icons.logout_outlined))
+          IconButton(onPressed: () {}, icon: const Icon(Icons.logout_outlined))
         ],
       ),
       body: Padding(

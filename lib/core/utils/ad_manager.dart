@@ -8,7 +8,7 @@ class AdManager {
   RxBool isInterstitialAdLoaded = false.obs;
   RxBool isCollapsibleBannerAdLoaded = false.obs;
   RxBool isNativeLoad = false.obs;
-  bool isAppOpenAd = false;
+  RxBool isAppOpenAd = false.obs;
   AppOpenAd? _appOpenAd;
   InterstitialAd? _interstitialAd;
   BannerAd? bannerAd;
@@ -22,6 +22,7 @@ class AdManager {
       adLoadCallback: AppOpenAdLoadCallback(onAdLoaded: (ad) {
         print('###################################### $ad');
         print('open app Ad loaded');
+        isAppOpenAd.value = true;
         _appOpenAd = ad;
       }, onAdFailedToLoad: (error) {
         print('######################################$error');
@@ -30,21 +31,22 @@ class AdManager {
     );
   }
 
-  void openAppAdCallback() {
-    _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
-      onAdDismissedFullScreenContent: (ad) {
-        _appOpenAd?.dispose();
-        _appOpenAd = null;
-        loadAppOpenAd();
-      },
-    );
-  }
+  // void openAppAdCallback() {
+  //   _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
+  //     onAdDismissedFullScreenContent: (ad) {
+  //       _appOpenAd?.dispose();
+  //       _appOpenAd = null;
+  //       loadAppOpenAd();
+  //     },
+  //   );
+  // }
 
   Future<void> showAppOpenAd() async {
-    if (_appOpenAd != null) {
-      openAppAdCallback();
+    if (isAppOpenAd.value && _appOpenAd != null) {
       _appOpenAd?.show();
-    } else {
+      _appOpenAd?.dispose();
+      isAppOpenAd.value = false;
+      _appOpenAd = null;
       loadAppOpenAd();
     }
   }
@@ -175,27 +177,27 @@ class AdManager {
   }
 
   /// App State
-  void listenToAppStateChange() {
-    AppStateEventNotifier.stopListening();
-    AppStateEventNotifier.appStateStream
-        .forEach((element) => onAppStateChange(element));
-  }
-
-  void onAppStateChange(AppState appState) {
-    if (appState == AppState.foreground) {
-      if (_appOpenAd != null) {
-        print("show app open ad");
-        print(appState);
-        showAppOpenAd();
-      } else {
-        print("show app load ad");
-        print(appState);
-        showAppOpenAd();
-      }
-    } else {
-      print("show app load ad");
-      print(appState);
-      showAppOpenAd();
-    }
-  }
+  // void listenToAppStateChange() {
+  //   AppStateEventNotifier.stopListening();
+  //   AppStateEventNotifier.appStateStream
+  //       .forEach((element) => onAppStateChange(element));
+  // }
+  //
+  // void onAppStateChange(AppState appState) {
+  //   if (appState == AppState.foreground) {
+  //     if (_appOpenAd != null) {
+  //       print("show app open ad");
+  //       print("%%%%%%%%%%%%%$appState");
+  //       showAppOpenAd();
+  //     } else {
+  //       print("show app load ad");
+  //       print("&&&&&&&&&&&&&&&&&&$appState");
+  //       loadAppOpenAd();
+  //     }
+  //   } else {
+  //     print("show app load ad");
+  //     print("################$appState");
+  //     loadAppOpenAd();
+  //   }
+  // }
 }
